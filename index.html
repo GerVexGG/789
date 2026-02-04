@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS eSports | Киберспортивная Арена</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --neon-color: #00ffc3; 
+            --neon-secondary: #00d4ff;
+            --bg-color: #05070a;
+            --card-bg: #0c1017;
+        }
+
+        * { 
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* АНИМИРОВАННЫЙ ФОН - ВОДОПАД */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-lines {
+            position: absolute;
+            width: 100%;
+            height: 200%;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 195, 0.03) 2px,
+                    rgba(0, 255, 195, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 195, 0.03) 2px,
+                    rgba(0, 255, 195, 0.03) 4px
+                );
+            background-size: 50px 50px;
+            animation: waterfall 20s linear infinite;
+        }
+
+        @keyframes waterfall {
+            0% { transform: translateY(-50%); }
+            100% { transform: translateY(0); }
+        }
+
+        /* ПЛАВАЮЩИЕ ЧАСТИЦЫ */
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--neon-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-color);
+            opacity: 0;
+            animation: float-particle linear infinite;
+        }
+
+        @keyframes float-particle {
+            0% {
+                transform: translateY(-100px) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(50px);
+                opacity: 0;
+            }
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-duration: 15s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 25%; animation-duration: 18s; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 40%; animation-duration: 12s; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 55%; animation-duration: 20s; animation-delay: 1s; }
+        .particle:nth-child(5) { left: 70%; animation-duration: 16s; animation-delay: 3s; }
+        .particle:nth-child(6) { left: 85%; animation-duration: 14s; animation-delay: 5s; }
+        .particle:nth-child(7) { left: 15%; animation-duration: 19s; animation-delay: 2.5s; }
+        .particle:nth-child(8) { left: 60%; animation-duration: 17s; animation-delay: 4.5s; }
+        .particle:nth-child(9) { left: 35%; animation-duration: 13s; animation-delay: 1.5s; }
+        .particle:nth-child(10) { left: 80%; animation-duration: 21s; animation-delay: 3.5s; }
+
+        /* ВОЛНЫ НА ФОНЕ */
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 200px;
+            background: linear-gradient(90deg, 
+                transparent 0%,
+                rgba(0, 255, 195, 0.05) 25%,
+                rgba(0, 212, 255, 0.05) 50%,
+                rgba(0, 255, 195, 0.05) 75%,
+                transparent 100%
+            );
+            animation: wave-move 15s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        .wave:nth-child(2) {
+            animation-delay: -5s;
+            animation-duration: 20s;
+            top: 30%;
+        }
+
+        .wave:nth-child(3) {
+            animation-delay: -10s;
+            animation-duration: 25s;
+            top: 60%;
+        }
+
+        @keyframes wave-move {
+            0%, 100% { transform: translateX(-50%); }
+            50% { transform: translateX(-25%); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* === ИСПРАВЛЕННАЯ ШАПКА === */
+        header {
+            background: rgba(5, 7, 10, 0.95);
+            backdrop-filter: blur(15px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 255, 195, 0.2);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+            transform: translateZ(0); /* Исправление для фиксированного позиционирования */
+        }
+        
+        header.scrolled {
+            padding: 10px 0;
+            box-shadow: 0 5px 30px rgba(0, 255, 195, 0.1);
+        }
+
+        header .container {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--neon-color);
+            text-shadow: 0 0 10px var(--neon-color);
+            text-decoration: none;
+        }
+
+        .header-logo img {
+            height: 45px;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 195, 0.5));
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            z-index: 1001;
+        }
+
+        .menu-toggle span {
+            width: 30px;
+            height: 3px;
+            background: var(--neon-color);
+            transition: 0.3s;
+            box-shadow: 0 0 10px var(--neon-color);
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 50px;
+        }
+        
+        nav a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 16px;
+            transition: 0.3s;
+            letter-spacing: 1.5px;
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--neon-color);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--neon-color);
+        }
+        
+        nav a:hover::after,
+        nav a.active::after { 
+            width: 100%;
+        }
+        
+        nav a:hover, nav a.active { 
+            color: var(--neon-color); 
+            text-shadow: 0 0 15px var(--neon-color); 
+        }
+
+        /* === HERO С ОТСТУПОМ ОТ HEADER === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(circle at center, rgba(0, 255, 195, 0.15) 0%, var(--bg-color) 70%);
+            border-bottom: 2px solid var(--neon-color);
+            overflow: hidden;
+            padding-top: 80px; /* Отступ для header */
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-logo-img {
+            width: 480px;
+            max-width: 90%;
+            margin-bottom: 30px;
+            mix-blend-mode: screen;
+            animation: pulse-glow 4s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { 
+                transform: scale(1); 
+                filter: drop-shadow(0 0 20px rgba(0, 255, 195, 0.5)); 
+            }
+            50% { 
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 60px rgba(0, 255, 195, 0.9)); 
+            }
+        }
+
+        h1 {
+            font-size: clamp(32px, 6vw, 60px);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 3px 3px 0px #000, 0 0 25px var(--neon-color);
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero span { 
+            color: var(--neon-color);
+            display: inline-block;
+            animation: neonPulse 2s infinite;
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 20px var(--neon-color); }
+            50% { text-shadow: 0 0 40px var(--neon-color), 0 0 60px var(--neon-color); }
+        }
+
+        .subtitle {
+            font-size: clamp(16px, 2vw, 20px);
+            margin: 20px auto 0;
+            color: #ccc;
+            max-width: 800px;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .btn-style {
+            display: inline-block;
+            padding: 18px 45px;
+            background: var(--neon-color);
+            border: none;
+            color: #000;
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 255, 195, 0.6);
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-style::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+        
+        .btn-style:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-style:hover {
+            background: white;
+            box-shadow: 0 0 40px var(--neon-color);
+            transform: scale(1.05) translateY(-2px);
+        }
+        
+        .hero-btn { 
+            margin-top: 40px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        /* === СЕКЦИЯ СТАТИСТИКИ === */
+        .stats-section {
+            padding: 100px 0;
+            background: linear-gradient(180deg, var(--bg-color) 0%, rgba(0, 255, 195, 0.05) 100%);
+            border-bottom: 1px solid rgba(0, 255, 195, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-box {
+            padding: 30px;
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 255, 195, 0.2);
+            transition: 0.3s;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-10px);
+            border-color: var(--neon-color);
+            box-shadow: 0 10px 30px rgba(0, 255, 195, 0.2);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--neon-color);
+            text-shadow: 0 0 20px var(--neon-color);
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #888;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* === СЕКЦИИ === */
+        .specs, .pricing, .games {
+            padding: 100px 0;
+            scroll-margin-top: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing {
+            background: rgba(0, 255, 195, 0.03);
+        }
+        
+        h2.section-title {
+            text-align: center;
+            font-size: clamp(32px, 5vw, 40px);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+        
+        h2.section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--neon-color);
+            box-shadow: 0 0 15px var(--neon-color);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 60px;
+            font-size: 16px;
+        }
+        
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .spec-card-btn {
+            background: var(--card-bg);
+            padding: 40px;
+            border: 1px solid #222;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            font-family: inherit;
+        }
+        
+        .spec-card-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-color), var(--neon-secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: 0.4s;
+        }
+        
+        .spec-card-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(0, 255, 195, 0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+            border-radius: 50%;
+        }
+        
+        .spec-card-btn:hover::after {
+            width: 400px;
+            height: 400px;
+        }
+        
+        .spec-card-btn:hover {
+            border-color: var(--neon-color);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 255, 195, 0.3);
+        }
+        
+        .spec-card-btn:hover::before { 
+            transform: scaleX(1); 
+        }
+        
+        .spec-icon { 
+            font-size: 60px; 
+            margin-bottom: 20px; 
+            text-shadow: 0 0 15px var(--neon-color);
+            filter: drop-shadow(0 0 20px var(--neon-color));
+            transition: 0.3s;
+        }
+        
+        .spec-card-btn:hover .spec-icon {
+            transform: scale(1.2) rotateY(180deg);
+        }
+        
+        .spec-card-btn h3 { 
+            font-size: 24px; 
+            margin: 15px 0; 
+            color: #fff; 
+        }
+        
+        .spec-card-btn p { 
+            color: #999; 
+            line-height: 1.8; 
+        }
+
+        /* === ТАРИФЫ === */
+        .price-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 30px; 
+            align-items: stretch; 
+        }
+        
+        .price-card { 
+            background: var(--card-bg); 
+            padding: 50px 30px; 
+            border: 1px solid #222; 
+            text-align: center; 
+            transition: all 0.3s ease; 
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .price-card.featured { 
+            border: 2px solid var(--neon-color); 
+            background: rgba(0, 255, 195, 0.05); 
+            transform: scale(1.05); 
+            box-shadow: 0 0 40px rgba(0, 255, 195, 0.2); 
+            z-index: 2; 
+        }
+
+        .price-card.featured::before {
+            content: 'ПОПУЛЯРНЫЙ';
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: var(--neon-color);
+            color: #000;
+            padding: 5px 40px;
+            font-size: 12px;
+            font-weight: 800;
+            transform: rotate(45deg);
+            box-shadow: 0 0 20px var(--neon-color);
+        }
+        
+        .price-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 255, 195, 0.2);
+        }
+
+        .price-card.featured:hover {
+            transform: scale(1.08) translateY(-10px);
+        }
+        
+        .price-card h3 { 
+            font-size: 28px; 
+            margin-bottom: 10px; 
+        }
+        
+        .price-card.featured h3 { 
+            color: var(--neon-color); 
+        }
+        
+        .price { 
+            font-size: 48px; 
+            font-weight: bold; 
+            margin: 20px 0; 
+        }
+        
+        .price span { 
+            font-size: 18px; 
+            color: #888; 
+            font-weight: normal; 
+        }
+        
+        .price-card.featured .price { 
+            color: var(--neon-color); 
+            text-shadow: 0 0 20px var(--neon-color); 
+        }
+        
+        .price-card ul { 
+            list-style: none; 
+            padding: 0; 
+            margin: 30px 0; 
+            color: #ccc; 
+            line-height: 2.5;
+            flex-grow: 1;
+        }
+
+        .price-card ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .price-card ul li::before {
+            content: '✓ ';
+            color: var(--neon-color);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .price-btn { 
+            padding: 15px 35px; 
+            background: transparent; 
+            border: 2px solid var(--neon-color); 
+            color: var(--neon-color); 
+            box-shadow: none;
+            margin-top: auto;
+        }
+        
+        .price-card.featured .price-btn, 
+        .price-btn:hover { 
+            background: var(--neon-color); 
+            color: #000; 
+            box-shadow: 0 0 30px var(--neon-color); 
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 160px;
+            background-color: var(--neon-color);
+            color: #000;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 0 20px var(--neon-color);
+        }
+        
+        .tooltip .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--neon-color) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* === ИГРЫ === */
+        .games-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+        }
+        
+        .game-btn {
+            height: 350px; 
+            background-color: #222; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-end;
+            padding-bottom: 30px; 
+            font-size: 26px; 
+            font-weight: bold; 
+            border: 1px solid #333; 
+            transition: all 0.4s ease;
+            text-transform: uppercase; 
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9); 
+            color: #fff;
+            background-size: cover; 
+            background-position: center;
+            box-shadow: inset 0 -120px 100px -20px rgba(0,0,0,0.8), 
+                        inset 0 0 0 200px rgba(0,0,0,0.3);
+            position: relative; 
+            z-index: 1; 
+            cursor: pointer; 
+            font-family: inherit;
+            overflow: hidden;
+        }
+        
+        .game-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 255, 195, 0) 0%, rgba(0, 255, 195, 0.2) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .game-btn::after { 
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            border: 2px solid transparent; 
+            transition: 0.3s; 
+            z-index: 2; 
+        }
+        
+        .game-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .game-btn:hover { 
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: inset 0 -100px 100px -20px rgba(0,0,0,0.6), 
+                        0 20px 40px rgba(0, 255, 195, 0.3); 
+        }
+        
+        .game-btn:hover::after { 
+            border-color: var(--neon-color);
+            box-shadow: 0 0 30px var(--neon-color);
+        }
+
+        .g-cs2 { background-image: url('assets/images/game1.jpg'); } 
+        .g-dota { background-image: url('assets/images/game2.jpg'); }
+        .g-val { background-image: url('assets/images/game3.jpg'); } 
+        .g-apex { background-image: url('assets/images/game4.jpg'); }
+        .g-fort { background-image: url('assets/images/game5.jpg'); } 
+        .g-warz { background-image: url('assets/images/game6.jpg'); }
+
+        /* === FOOTER === */
+        footer { 
+            background: #020305; 
+            padding: 80px 0 30px; 
+            border-top: 1px solid rgba(0, 255, 195, 0.1); 
+            text-align: center; 
+            color: #666; 
+            scroll-margin-top: 80px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+            text-align: left;
+        }
+
+        .footer-section h3 {
+            color: var(--neon-color);
+            margin-bottom: 20px;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #888;
+            line-height: 2;
+            text-decoration: none;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--neon-color);
+            padding-left: 10px;
+        }
+
+        .footer-logo { 
+            text-align: center;
+        }
+
+        .footer-logo img { 
+            height: 80px; 
+            opacity: 0.7; 
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 195, 0.3));
+            transition: 0.3s;
+        }
+
+        .footer-logo img:hover {
+            opacity: 1;
+            filter: drop-shadow(0 0 20px var(--neon-color));
+        }
+        
+        .social-icons { 
+            margin: 30px 0; 
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+        
+        .social-icons a { 
+            color: #666; 
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border: 2px solid #666;
+            border-radius: 50%;
+        }
+        
+        .social-icons a:hover { 
+            color: var(--neon-color);
+            border-color: var(--neon-color);
+            transform: scale(1.2) translateY(-5px) rotate(360deg);
+            box-shadow: 0 10px 20px rgba(0, 255, 195, 0.3);
+        }
+
+        .copyright { 
+            margin-top: 60px; 
+            font-size: 12px; 
+            opacity: 0.5;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* === МОДАЛЬНЫЕ ОКНА === */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0; 
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9); 
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg); 
+            margin: 5% auto; 
+            padding: 40px;
+            border: 2px solid var(--neon-color); 
+            width: 90%; 
+            max-width: 700px;
+            position: relative; 
+            text-align: center;
+            box-shadow: 0 0 60px rgba(0, 255, 195, 0.4);
+            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .close { 
+            color: #aaa; 
+            position: absolute; 
+            top: 15px; 
+            right: 25px; 
+            font-size: 40px; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            cursor: pointer; 
+            z-index: 10;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close:hover { 
+            color: var(--neon-color); 
+            text-shadow: 0 0 20px var(--neon-color);
+            background: rgba(0, 255, 195, 0.1);
+            transform: rotate(90deg);
+        }
+        
+        .modal h2 { 
+            color: var(--neon-color); 
+            margin-top: 0; 
+            font-size: 32px; 
+            text-transform: uppercase;
+            text-shadow: 0 0 20px var(--neon-color);
+        }
+
+        .spec-modal-video {
+            width: 100%; 
+            height: 350px; 
+            object-fit: cover;
+            border-radius: 8px; 
+            margin-bottom: 25px;
+            border: 2px solid var(--neon-color);
+            box-shadow: 0 0 40px rgba(0, 255, 195, 0.3);
+            background: #000; 
+        }
+        
+        .spec-modal-desc { 
+            text-align: left; 
+            color: #ccc; 
+            line-height: 2; 
+            font-size: 16px; 
+        }
+        
+        .spec-modal-desc ul { 
+            list-style: none; 
+            padding-left: 0; 
+            margin-top: 15px; 
+        }
+
+        .spec-modal-desc ul li {
+            padding: 8px 0 8px 30px;
+            position: relative;
+        }
+
+        .spec-modal-desc ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--neon-color);
+            font-weight: bold;
+        }
+
+        .game-modal-content {
+            max-width: 900px; 
+            padding: 0; 
+            border: none; 
+            background: transparent;
+            clip-path: none; 
+            box-shadow: none;
+        }
+        
+        .game-dossier {
+            background-size: cover; 
+            background-position: center;
+            position: relative; 
+            overflow: hidden;
+            border: 3px solid var(--neon-color);
+            box-shadow: 0 0 60px rgba(0, 255, 195, 0.5);
+            border-radius: 10px;
+        }
+        
+        .game-dossier-overlay {
+            background: rgba(5, 7, 10, 0.92);
+            padding: 60px 40px;
+            backdrop-filter: blur(8px);
+        }
+        
+        .game-stats-grid {
+            display: flex; 
+            justify-content: space-around; 
+            margin: 40px 0;
+            border-top: 1px solid rgba(0, 255, 195, 0.3);
+            border-bottom: 1px solid rgba(0, 255, 195, 0.3);
+            padding: 30px 0;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item { 
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .stat-item h4 { 
+            color: #888; 
+            margin: 0 0 10px; 
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-val { 
+            font-size: 42px; 
+            font-weight: 800; 
+            color: var(--neon-color); 
+            text-shadow: 0 0 20px var(--neon-color); 
+        }
+        
+        .game-desc-text { 
+            font-size: 18px; 
+            line-height: 1.8; 
+            color: #ddd; 
+            margin-bottom: 40px; 
+            font-style: italic; 
+        }
+        
+        .gm-cs2 { background-image: url('assets/images/game1.jpg'); } 
+        .gm-dota { background-image: url('assets/images/game2.jpg'); }
+        .gm-val { background-image: url('assets/images/game3.jpg'); } 
+        .gm-apex { background-image: url('assets/images/game4.jpg'); }
+        .gm-fort { background-image: url('assets/images/game5.jpg'); } 
+        .gm-warz { background-image: url('assets/images/game6.jpg'); }
+
+        .modal-input { 
+            width: 100%; 
+            padding: 18px; 
+            margin: 10px 0 20px; 
+            background: #05070a; 
+            border: 2px solid #333; 
+            color: #fff; 
+            font-family: inherit; 
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-input:focus { 
+            outline: none; 
+            border-color: var(--neon-color); 
+            box-shadow: 0 0 20px rgba(0, 255, 195, 0.3); 
+        }
+        
+        .modal-btn { 
+            width: 100%; 
+            margin-top: 10px; 
+        }
+
+        /* === КНОПКА ВВЕРХ === */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--neon-color);
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 0 20px var(--neon-color);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-10px) scale(1.1);
+            box-shadow: 0 10px 40px var(--neon-color);
+        }
+
+        .scroll-top.show {
+            display: flex;
+        }
+
+        /* === АДАПТИВНОСТЬ === */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+
+            nav {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: rgba(5, 7, 10, 0.98);
+                backdrop-filter: blur(15px);
+                max-height: 0;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                border-bottom: 2px solid var(--neon-color);
+                overflow: hidden;
+            }
+
+            nav.active {
+                max-height: 500px;
+                opacity: 1;
+                visibility: visible;
+            }
+
+            nav ul {
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            nav a {
+                font-size: 18px;
+                display: block;
+                padding: 15px;
+            }
+
+            .hero {
+                min-height: 80vh;
+                padding: 100px 20px 40px;
+            }
+
+            .hero-logo-img {
+                width: 300px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .specs-grid,
+            .price-grid,
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .price-card.featured {
+                transform: scale(1);
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .footer-section a:hover {
+                padding-left: 0;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                padding: 30px 20px;
+            }
+
+            .scroll-top {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn-style {
+                padding: 15px 30px;
+                font-size: 14px;
+            }
+
+            .stat-number {
+                font-size: 36px;
+            }
+
+            .game-btn {
+                height: 250px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- АНИМИРОВАННЫЙ ФОН -->
+    <div class="animated-bg">
+        <div class="bg-lines"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <header>
+        <div class="container">
+            <a href="#hero" class="header-logo">
+                <img src="assets/images/logo.png" alt="NEXUS">
+                <span>NEXUS</span>
+            </a>
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="#specs" class="nav-link" data-section="specs">Железо</a></li>
+                    <li><a href="#pricing" class="nav-link" data-section="pricing">Тарифы</a></li>
+                    <li><a href="#games" class="nav-link" data-section="games">Игры</a></li>
+                    <li><a href="#contact" class="nav-link" data-section="contact">Контакты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="hero">
+        <div class="container">
+            <img src="assets/images/logo.png" alt="NEXUS LOGO" class="hero-logo-img" data-aos="zoom-in">
+            <h1 data-aos="fade-down" data-aos-delay="200">Добро пожаловать в <span>NEXUS</span></h1>
+            <p class="subtitle" data-aos="fade-up" data-aos-delay="400">Твоя точка входа в мир большого киберспорта. Играй на железе профессионалов, побеждай с комфортом.</p>
+            <button class="btn-style hero-btn openModalBtn" data-modal="bookingModal" data-aos="fade-up" data-aos-delay="600">Забронировать ПК</button>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-box" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-number" data-count="50">0</div>
+                    <div class="stat-label">Игровых мест</div>
+                </div>
+                <div class="stat-box" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-number" data-count="10000">0</div>
+                    <div class="stat-label">Довольных игроков</div>
+                </div>
+                <div class="stat-box" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-number" data-count="24">0</div>
+                    <div class="stat-label">Часа в сутки</div>
+                </div>
+                <div class="stat-box" data-aos="fade-up" data-aos-delay="400">
+                    <div class="stat-number" data-count="360">0</div>
+                    <div class="stat-label">Hz мониторы</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="specs" id="specs">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Наш Арсенал</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">(Кликните, чтобы увидеть в действии)</p>
+            <div class="specs-grid">
+                <button class="spec-card-btn openModalBtn" data-modal="videoModal1" data-aos="fade-up" data-aos-delay="200">
+                    <div class="spec-icon">⚡</div>
+                    <h3>RTX 4090 Power</h3>
+                    <p>Топовые видеокарты нового поколения. Максимальный FPS в любых играх на ультра настройках.</p>
+                </button>
+                <button class="spec-card-btn openModalBtn" data-modal="videoModal2" data-aos="fade-up" data-aos-delay="300">
+                    <div class="spec-icon">📺</div>
+                    <h3>360Hz Мониторы</h3>
+                    <p>Невероятная плавность изображения для мгновенной реакции. Технология DyAc⁺.</p>
+                </button>
+                <button class="spec-card-btn openModalBtn" data-modal="videoModal3" data-aos="fade-up" data-aos-delay="400">
+                    <div class="spec-icon">🎧</div>
+                    <h3>PRO Периферия</h3>
+                    <p>Сетап киберспортивного уровня. Logitech, HyperX, SteelSeries.</p>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Тарифные планы</h2>
+            <div class="price-grid">
+                <div class="price-card" data-aos="fade-right" data-aos-delay="100">
+                    <h3>STANDART</h3>
+                    <div class="price">800 ₸ <span>/ час</span></div>
+                    <ul>
+                        <li>RTX 3070 / 165Hz</li>
+                        <li>Общий зал</li>
+                        <li>Механическая клавиатура</li>
+                        <li>Gaming мышь</li>
+                        <li>Комфортное кресло</li>
+                    </ul>
+                    <button class="btn-style price-btn openModalBtn tooltip" data-modal="bookingModal">
+                        <span class="tooltip-text">Нажми для брони</span>
+                        Выбрать
+                    </button>
+                </div>
+                <div class="price-card featured" data-aos="fade-up" data-aos-delay="200">
+                    <h3>NEXUS VIP</h3>
+                    <div class="price">1500 ₸ <span>/ час</span></div>
+                    <ul>
+                        <li>RTX 4090 / 360Hz</li>
+                        <li>VIP-зона</li>
+                        <li>SecretLab кресло</li>
+                        <li>PRO периферия</li>
+                        <li>Приоритетная поддержка</li>
+                        <li>Напитки в подарок</li>
+                    </ul>
+                    <button class="btn-style price-btn openModalBtn tooltip" data-modal="bookingModal">
+                        <span class="tooltip-text">Нажми для брони</span>
+                        Выбрать VIP
+                    </button>
+                </div>
+                <div class="price-card" data-aos="fade-left" data-aos-delay="300">
+                    <h3>BOOTCAMP</h3>
+                    <div class="price">6000 ₸ <span>/ час</span></div>
+                    <ul>
+                        <li>Комната на 5 ПК</li>
+                        <li>Шумоизоляция</li>
+                        <li>Проектор для анализа</li>
+                        <li>Тренерская доска</li>
+                        <li>Отдельная зона отдыха</li>
+                    </ul>
+                    <button class="btn-style price-btn openModalBtn tooltip" data-modal="bookingModal">
+                        <span class="tooltip-text">Нажми для брони</span>
+                        Арендовать
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="games" id="games">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Во что играем</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Все популярные киберспортивные дисциплины</p>
+            <div class="games-grid">
+                <button class="game-btn g-cs2 openModalBtn" data-modal="gameModal1" data-aos="zoom-in" data-aos-delay="100">CS 2</button>
+                <button class="game-btn g-dota openModalBtn" data-modal="gameModal2" data-aos="zoom-in" data-aos-delay="200">Dota 2</button>
+                <button class="game-btn g-val openModalBtn" data-modal="gameModal3" data-aos="zoom-in" data-aos-delay="300">Valorant</button>
+                <button class="game-btn g-apex openModalBtn" data-modal="gameModal4" data-aos="zoom-in" data-aos-delay="400">Apex Legends</button>
+                <button class="game-btn g-fort openModalBtn" data-modal="gameModal5" data-aos="zoom-in" data-aos-delay="500">Fortnite</button>
+                <button class="game-btn g-warz openModalBtn" data-modal="gameModal6" data-aos="zoom-in" data-aos-delay="600">Warzone</button>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content" data-aos="fade-up">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="assets/images/logo.png" alt="NEXUS">
+                    </div>
+                    <p style="text-align: center;">Киберспортивная арена нового поколения</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Навигация</h3>
+                    <a href="#specs">Железо</a>
+                    <a href="#pricing">Тарифы</a>
+                    <a href="#games">Игры</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <p>📍 г. Астана, ул. Киберспортивная, д. 13</p>
+                    <p>📞 +7 (777) 000-00-00</p>
+                    <p>✉️ info@nexus-esports.kz</p>
+                    <p>🕐 Круглосуточно, 24/7</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>График работы</h3>
+                    <p>Понедельник - Пятница: 24/7</p>
+                    <p>Суббота - Воскресенье: 24/7</p>
+                    <p>Турниры: по расписанию</p>
+                </div>
+            </div>
+
+            <div class="social-icons" data-aos="fade-up" data-aos-delay="100">
+                <a href="#" title="Facebook"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm3 8h-1.35c-.538 0-.65.221-.65.778v1.222h2l-.209 2h-1.791v7h-3v-7h-2v-2h2v-2.308c0-1.769.931-2.692 3.029-2.692h1.971v3z"/></svg></a>
+                <a href="#" title="Instagram"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                <a href="#" title="Telegram"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg></a>
+                <a href="#" title="Discord"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm-2.5 8.5c-.828 0-1.5.895-1.5 2s.672 2 1.5 2 1.5-.895 1.5-2-.672-2-1.5-2zm5 0c-.828 0-1.5.895-1.5 2s.672 2 1.5 2 1.5-.895 1.5-2-.672-2-1.5-2zm-6.5 7c0 1.5 3.5 2 4 2s4-.5 4-2h-8z"/></svg></a>
+                <a href="#" title="VK"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.344 16.163h-1.867c-.562 0-.73-.458-1.732-1.479-.875-.906-1.261-1.027-1.482-1.027-.301 0-.385.084-.385.493v1.354c0 .364-.115.583-1.075.583-1.591 0-3.349-0.967-4.588-2.769-1.851-2.675-2.365-4.688-2.365-5.096 0-.219.084-.423.493-.423h1.867c.367 0 .507.168.65.561.718 2.099 1.926 3.937 2.424 3.937.188 0 .272-.085.272-.554v-2.177c-.062-.991-.582-1.076-.582-1.429 0-.175.146-.346.383-.346h2.933c.311 0 .425.164.425.519v2.895c0 .311.141.424.229.424.188 0 .346-.113.696-.463 1.069-1.202 1.835-3.059 1.835-3.059.103-.219.272-.423.642-.423h1.867c.558 0 .681.287.558.677-.229.967-2.474 4.191-2.474 4.191-.159.261-.219.376 0 .672.159.219.681.667 1.034 1.073.65.744 1.149 1.367 1.281 1.802.135.438-.067.659-.505.659z"/></svg></a>
+            </div>
+            
+            <p class="copyright">© 2025 NEXUS eSports. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- МОДАЛЬНЫЕ ОКНА -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Бронирование</h2>
+            <p>Оставьте заявку, и мы свяжемся для подтверждения.</p>
+            <form id="bookingForm">
+                <input type="text" class="modal-input" placeholder="Ваше Имя" required>
+                <input type="tel" class="modal-input" placeholder="Ваш Телефон" required pattern="[0-9]{10,}" title="Введите корректный номер телефона">
+                <input type="email" class="modal-input" placeholder="Ваш Email (опционально)">
+                <select class="modal-input" required>
+                    <option value="">Выберите тариф</option>
+                    <option>Тариф STANDART</option>
+                    <option>Тариф VIP</option>
+                    <option>BOOTCAMP</option>
+                </select>
+                <input type="datetime-local" class="modal-input" placeholder="Дата и время" required>
+                <button type="submit" class="btn-style modal-btn">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="videoModal1" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>NVIDIA RTX 4090 Beast</h2>
+            <video class="spec-modal-video" autoplay loop muted playsinline>
+                <source src="assets/videos/vid1.mp4" type="video/mp4">
+            </video>
+            <div class="spec-modal-desc">
+                <p>Абсолютная мощь. Никаких компромиссов. Видеокарта нового поколения с архитектурой Ada Lovelace обеспечивает беспрецедентную производительность.</p>
+                <ul>
+                    <li>4K Гейминг на Ультра настройках</li>
+                    <li>Стабильные 500+ FPS в CS2</li>
+                    <li>Ray Tracing в реальном времени</li>
+                    <li>DLSS 3.0 для максимальной плавности</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="videoModal2" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>ZOWIE 360Hz DyAc⁺</h2>
+            <video class="spec-modal-video" autoplay loop muted playsinline>
+                <source src="assets/videos/vid2.mp4" type="video/mp4">
+            </video>
+            <div class="spec-modal-desc">
+                <p>Секретное оружие профессиональных снайперов. Картинка настолько плавная, что ты видишь каждый кадр движения противника.</p>
+                <ul>
+                    <li>Частота обновления 360 Гц</li>
+                    <li>Технология DyAc⁺ для четкости</li>
+                    <li>Время отклика 0.5 мс</li>
+                    <li>Используется на турнирах Tier-1</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="videoModal3" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>PRO Setup RGB</h2>
+            <video class="spec-modal-video" autoplay loop muted playsinline>
+                <source src="assets/videos/vid3.mp4" type="video/mp4">
+            </video>
+            <div class="spec-modal-desc">
+                <p>Топовые беспроводные мыши Logitech G Pro X Superlight и механические клавиатуры на красных свитчах Cherry MX. Идеальный контроль и тактильный отклик.</p>
+                <ul>
+                    <li>Logitech G Pro X Superlight</li>
+                    <li>Cherry MX Red механика</li>
+                    <li>HyperX Cloud Alpha наушники</li>
+                    <li>RGB подсветка с синхронизацией</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНЫЕ ОКНА ИГР -->
+    <div id="gameModal1" class="modal">
+        <div class="modal-content game-modal-content">
+            <div class="game-dossier gm-cs2">
+                <div class="game-dossier-overlay">
+                    <span class="close">&times;</span>
+                    <h2>CS 2: Операция Nexus</h2>
+                    <div class="game-stats-grid">
+                        <div class="stat-item">
+                            <h4>Средний FPS</h4>
+                            <div class="stat-val">540</div>
+                        </div>
+                        <div class="stat-item">
+                            <h4>Пинг LAN</h4>
+                            <div class="stat-val">1ms</div>
+                        </div>
+                        <div class="stat-item">
+                            <h4>Tick Rate</h4>
+                            <div class="stat-val">128</div>
+                        </div>
+                    </div>
+                    <p class="game-desc-text">"Идеальная площадка для твоих клатчей. Регистрирует каждый выстрел. Никаких оправданий - только чистый скилл."</p>
+                    <button class="btn-style modal-btn openModalBtn" data-modal="bookingModal">Занять слот</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameModal2" class="modal">
+        <div class="modal-content game-modal-content">
+            <div class="game-dossier gm-dota">
+                <div class="game-dossier-overlay">
+                    <span class="close">&times;</span>
+                    <h2>Dota 2: Битва Древних</h2>
+                    <div class="game-stats-grid">
+                        <div class="stat-item">
+                            <h4>FPS</h4>
+                            <div class="stat-val">300+</div>
+                        </div>
+                        <div class="stat-item">
+                            <h4>Пинг</h4>
+                            <div class="stat-val">5ms</div>
+                        </div>
+                    </div>
+                    <p class="game-desc-text">"Никаких лагов даже при касте Блэкхола с полным стадионом юнитов. Твои teamfight'ы станут идеальными."</p>
+                    <button class="btn-style modal-btn openModalBtn" data-modal="bookingModal">Занять слот</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameModal3" class="modal">
+        <div class="modal-content game-modal-content">
+            <div class="game-dossier gm-val">
+                <div class="game-dossier-overlay">
+                    <span class="close">&times;</span>
+                    <h2>Valorant: Протокол</h2>
+                    <div class="game-stats-grid">
+                        <div class="stat-item">
+                            <h4>FPS</h4>
+                            <div class="stat-val">600+</div>
+                        </div>
+                        <div class="stat-item">
+                            <h4>Реакция</h4>
+                            <div class="stat-val">0.5ms</div>
+                        </div>
+                    </div>
+                    <p class="game-desc-text">"Точность стрельбы выходит на новый уровень. Peek преимущество гарантировано."</p>
+                    <button class="btn-style modal-btn openModalBtn" data-modal="bookingModal">Занять слот</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameModal4" class="modal">
+        <div class="modal-content game-modal-content">
+            <div class="game-dossier gm-apex">
+                <div class="game-dossier-overlay">
+                    <span class="close">&times;</span>
+                    <h2>Apex Legends</h2>
+                    <div class="game-stats-grid">
+                        <div class="stat-item">
+                            <h4>FPS Ultra</h4>
+                            <div class="stat-val">240+</div>
+                        </div>
+                    </div>
+                    <p class="game-desc-text">"Динамичные бои без просадок FPS. Все твои слайды и валлджампы будут четкими."</p>
+                    <button class="btn-style modal-btn openModalBtn" data-modal="bookingModal">В бой</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameModal5" class="modal">
+        <div class="modal-content game-modal-content">
+            <div class="game-dossier gm-fort">
+                <div class="game-dossier-overlay">
+                    <span class="close">&times;</span>
+                    <h2>Fortnite</h2>
+                    <div class="game-stats-grid">
+                        <div class="stat-item">
+                            <h4>FPS Perf.</h4>
+                            <div class="stat-val">400+</div>
+                        </div>
+                    </div>
+                    <p class="game-desc-text">"Стройся и стреляй без задержек. Билдинг на максимальной скорости."</p>
+                    <button class="btn-style modal-btn openModalBtn" data-modal="bookingModal">В бой</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameModal6" class="modal">
+        <div class="modal-content game-modal-content">
+            <div class="game-dossier gm-warz">
+                <div class="game-dossier-overlay">
+                    <span class="close">&times;</span>
+                    <h2>Call of Duty: Warzone</h2>
+                    <div class="game-stats-grid">
+                        <div class="stat-item">
+                            <h4>FPS 2K</h4>
+                            <div class="stat-val">180+</div>
+                        </div>
+                    </div>
+                    <p class="game-desc-text">"Верданск ждет. Королевская битва в 2K разрешении с высоким FPS."</p>
+                    <button class="btn-style modal-btn openModalBtn" data-modal="bookingModal">В бой</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- КНОПКА ВВЕРХ -->
+    <button class="scroll-top" id="scrollTop">↑</button>
+
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        // Инициализация AOS
+        AOS.init({
+            once: true,
+            duration: 800,
+            offset: 100
+        });
+
+        // Элементы DOM
+        const openBtns = document.querySelectorAll(".openModalBtn");
+        const closeBtns = document.querySelectorAll(".close, .closeModalBtn");
+        const modals = document.querySelectorAll(".modal");
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const bookingForm = document.getElementById('bookingForm');
+        const header = document.querySelector('header');
+        const scrollTopBtn = document.getElementById('scrollTop');
+        const menuToggle = document.getElementById('menuToggle');
+        const mainNav = document.getElementById('mainNav');
+
+        // МОДАЛЬНЫЕ ОКНА
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = "block";
+                const video = modal.querySelector('video');
+                if (video) video.play();
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeAllModals() {
+            modals.forEach(modal => {
+                if (modal.style.display === "block") {
+                    modal.style.display = "none";
+                    document.body.style.overflow = 'auto';
+                    const video = modal.querySelector('video');
+                    if (video) video.pause();
+                }
+            });
+        }
+
+        openBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-modal');
+                openModal(targetId);
+            });
+        });
+
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', closeAllModals);
+        });
+
+        window.addEventListener('click', (event) => {
+            modals.forEach(modal => {
+                if (event.target == modal) closeAllModals();
+            });
+        });
+
+        // ВАЛИДАЦИЯ ФОРМЫ
+        bookingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const inputs = this.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value) {
+                    input.style.borderColor = '#ff0000';
+                    input.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.5)';
+                    isValid = false;
+                } else {
+                    input.style.borderColor = '';
+                    input.style.boxShadow = '';
+                }
+            });
+
+            if (isValid) {
+                alert("✅ Заявка успешно отправлена!\n\nМы свяжемся с вами в ближайшее время для подтверждения брони.\n\n(Это демо-версия)");
+                this.reset();
+                closeAllModals();
+            } else {
+                alert("❌ Пожалуйста, заполните все обязательные поля!");
+            }
+        });
+
+        // ПОДСВЕТКА АКТИВНОГО МЕНЮ ПРИ СКРОЛЛЕ
+        function highlightActiveMenu() {
+            let current = 'hero';
+            const fromTop = window.scrollY + 150;
+
+            sections.forEach(section => {
+                if (section.offsetTop <= fromTop) {
+                    current = section.id;
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // ЭФФЕКТ СКРОЛЛА ДЛЯ HEADER
+        function handleScroll() {
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+                scrollTopBtn.classList.add('show');
+            } else {
+                header.classList.remove('scrolled');
+                scrollTopBtn.classList.remove('show');
+            }
+            highlightActiveMenu();
+        }
+
+        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('load', highlightActiveMenu);
+
+        // КНОПКА ВВЕРХ
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // МОБИЛЬНОЕ МЕНЮ
+        menuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+        });
+
+        // Закрытие меню при клике на ссылку
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mainNav.classList.remove('active');
+            });
+        });
+
+        // АНИМАЦИЯ СЧЕТЧИКОВ
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            const speed = 200;
+
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-count');
+                let count = 0;
+                const increment = target / speed;
+
+                const updateCount = () => {
+                    count += increment;
+                    if (count < target) {
+                        counter.textContent = Math.ceil(count);
+                        setTimeout(updateCount, 10);
+                    } else {
+                        counter.textContent = target + (target === 10000 ? '+' : '');
+                    }
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && counter.textContent === '0') {
+                            updateCount();
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                observer.observe(counter);
+            });
+        }
+
+        animateCounters();
+
+        // ПЛАВНАЯ ПРОКРУТКА К ЯКОРЯМ
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 80;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        console.log('🎮 NEXUS eSports Arena - Исправленная версия с анимированным фоном! 🚀');
+    </script>
+</body>
+</html>
